@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import React, { Component } from 'react';
 import './App.css';
-import Box from './component/Box';
+import BoxClass from './component/BoxClass';
 
 const choice = {
   rock: {
@@ -17,33 +17,42 @@ const choice = {
   },
 };
 
-function App() {
-  const [userSelect, setUserSelect] = useState(null);
-  const [computerSelect, setComputerSelect] = useState(null);
-  const [result, setResult] = useState('');
+export default class AppClass extends Component {
+  constructor() {
+    super();
+    this.state = {
+      userSelect: null,
+      computerSelect: null,
+      result: '',
+    };
+  }
 
-  const play = (userChoice) => {
-    setUserSelect(choice[userChoice]);
-    const computerChoice = randomChoice();
-    setComputerSelect(computerChoice);
-    const gameResult = judgment(choice[userChoice], computerChoice);
-    setResult(gameResult);
+  play = (userChoice) => {
+    let computerChoice = this.randomChoice();
+    let gameResult = this.judgement(choice[userChoice], computerChoice);
+    this.setState({
+      userSelect: choice[userChoice],
+      computerSelect: computerChoice,
+      result: gameResult,
+    });
   };
 
-  const randomChoice = () => {
-    let itemArray = Object.keys(choice); // 객체에 키값만 뽑아서 어레이로 만들어주는 함수다
+  randomChoice = () => {
+    let itemArray = Object.keys(choice);
     let randomItem = Math.floor(Math.random() * itemArray.length);
     let final = itemArray[randomItem];
     return choice[final];
   };
 
-  const reset = () => {
-    setUserSelect(null);
-    setComputerSelect(null);
-    setResult('');
+  reset = () => {
+    this.setState({
+      userSelect: null,
+      computerSelect: null,
+      result: '',
+    });
   };
 
-  const judgment = (user, computer) => {
+  judgement = (user, computer) => {
     if (user.name === computer.name) {
       return 'tie';
     } else if (user.name === 'Rock') {
@@ -55,24 +64,32 @@ function App() {
     }
   };
 
-  return (
-    <div>
-      <h1 className='header main'>Rock Scissors Paper!</h1>
-      <div className='main'>
-        <Box title='You' item={userSelect} result={result} />
-        <Box title='Computer' item={computerSelect} result={result} />
-      </div>
+  render() {
+    return (
+      <div>
+        <h1 className='header main'>Rock Scissors Paper!</h1>
+        <div className='main'>
+          <BoxClass
+            title='You'
+            item={this.state.userSelect}
+            result={this.state.result}
+          />
+          <BoxClass
+            title='Computer'
+            item={this.state.computerSelect}
+            result={this.state.result}
+          />
+        </div>
 
-      <div className='main'>
-        <button onClick={() => play('rock')}>✊</button>
-        <button onClick={() => play('scissors')}>✂️</button>
-        <button onClick={() => play('paper')}>✋</button>
+        <div className='main'>
+          <button onClick={() => this.play('rock')}>✊</button>
+          <button onClick={() => this.play('scissors')}>✂️</button>
+          <button onClick={() => this.play('paper')}>✋</button>
+        </div>
+        <div className='main reset'>
+          <button onClick={() => this.reset()}>🔄</button>
+        </div>
       </div>
-      <div className='main reset'>
-        <button onClick={() => reset()}>🔄</button>
-      </div>
-    </div>
-  );
+    );
+  }
 }
-
-export default App;
